@@ -3,6 +3,13 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
+      dist: {
+        src: [
+          'public/client/*.js',
+          'public/lib/*.js'
+        ],
+        dest: 'public/dist/production.js'
+      }
     },
 
     mochaTest: {
@@ -21,6 +28,10 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      dist: {
+        src: 'public/dist/production.js',
+        dest: 'public/dist/production.min.js'
+      }
     },
 
     jshint: {
@@ -61,6 +72,11 @@ module.exports = function(grunt) {
 
     shell: {
       prodServer: {
+        command: [
+          'azure site scale mode standard datshortly',
+          'git push azure master',
+          'azure site scale mode free datshortly'
+        ].join('&&')
       }
     },
   });
@@ -101,6 +117,7 @@ module.exports = function(grunt) {
   grunt.registerTask('upload', function(n) {
     if(grunt.option('prod')) {
       // add your production server task here
+      grunt.task.run(['deploy']);
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
@@ -108,6 +125,9 @@ module.exports = function(grunt) {
 
   grunt.registerTask('deploy', [
     // add your deploy tasks here
+    'concat',
+    'uglify',
+    'shell:prodServer'
   ]);
 
 
