@@ -5,17 +5,15 @@ module.exports = function(grunt) {
     concat: {
       libs: {
         src: [
-          'public/client/*.js',
           'public/lib/*.js'
         ],
-        dest: 'public/dist/production.js'
+        dest: 'public/dist/libs.js'
       },
       app: {
         src: [
           'public/client/*.js',
-          'public/lib/*.js'
         ],
-        dest: 'public/dist/production.js'
+        dest: 'public/dist/app.js'
       }
     },
 
@@ -36,12 +34,12 @@ module.exports = function(grunt) {
 
     uglify: {
       libs: {
-        src: 'public/dist/production.js',
-        dest: 'public/dist/production.min.js'
+        src: 'public/dist/libs.js',
+        dest: 'public/dist/libs.min.js'
       },
       app: {
-        src: 'public/dist/production.js',
-        dest: 'public/dist/production.min.js'
+        src: 'public/dist/app.js',
+        dest: 'public/dist/app.min.js'
       }
     },
 
@@ -62,6 +60,15 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
+      target: {
+        files: [{
+          expand: true,
+          cwd: 'public',
+          src: ['*.css', '!*.min.css'],
+          dest: 'public/dist',
+          ext: '.min.css'
+        }]
+      }
     },
 
     watch: {
@@ -82,6 +89,10 @@ module.exports = function(grunt) {
     },
 
     shell: {
+      options: {
+        stderr: true,
+        stdout: true
+      },
       prodServer: {
         command: [
           'azure site scale mode standard datshortly',
@@ -119,16 +130,19 @@ module.exports = function(grunt) {
   /////////////////////////////////////////////////////
 
   grunt.registerTask('test', [
-    'mochaTest'
+    'jshint',
+    'mochaTest',
+    'watch'
   ]);
 
   grunt.registerTask('build', [
+    'deploy'
   ]);
 
   grunt.registerTask('upload', function(n) {
     if(grunt.option('prod')) {
       // add your production server task here
-      grunt.task.run(['deploy']);
+      grunt.task.run(['shell']);
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
@@ -138,7 +152,7 @@ module.exports = function(grunt) {
     // add your deploy tasks here
     'concat',
     'uglify',
-    'shell:prodServer'
+    'cssmin'
   ]);
 
 
