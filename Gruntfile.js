@@ -3,7 +3,14 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
-      dist: {
+      libs: {
+        src: [
+          'public/client/*.js',
+          'public/lib/*.js'
+        ],
+        dest: 'public/dist/production.js'
+      },
+      app: {
         src: [
           'public/client/*.js',
           'public/lib/*.js'
@@ -28,7 +35,11 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-      dist: {
+      libs: {
+        src: 'public/dist/production.js',
+        dest: 'public/dist/production.min.js'
+      },
+      app: {
         src: 'public/dist/production.js',
         dest: 'public/dist/production.min.js'
       }
@@ -105,7 +116,7 @@ module.exports = function(grunt) {
 
   ////////////////////////////////////////////////////
   // Main grunt tasks
-  ////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////
 
   grunt.registerTask('test', [
     'mochaTest'
